@@ -1,0 +1,29 @@
+name: Build RFM Model File
+
+on:
+  workflow_dispatch:
+  schedule: 
+    - cron: "0 1 1/7 * *"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v3
+      - uses: yaananth/run-notebook@v2
+        env:
+          RUNNER: ${{ toJson(runner) }}
+          SECRETS: ${{ toJson(secrets) }}
+          GITHUB: ${{ toJson(github) }}
+        with:
+          notebook: "code/customer_segmentation_asia.ipynb"
+          isReport: False
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: output
+          path: ${{ RUNNER.temp }}/nb-runner
+        env:
+          RUNNER: ${{ toJson(runner) }}
